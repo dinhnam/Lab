@@ -41,7 +41,7 @@ public class ListViewAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.row, parent);
+            convertView = mInflater.inflate(R.layout.row, parent, false);
             holder = new ViewHolder();
             holder.SSID = (TextView) convertView.findViewById(R.id.ssid_tv);
             holder.level = (TextView) convertView.findViewById(R.id.level_tv);
