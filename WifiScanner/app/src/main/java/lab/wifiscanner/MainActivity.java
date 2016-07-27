@@ -2,7 +2,9 @@ package lab.wifiscanner;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.wifi.ScanResult;
@@ -10,6 +12,7 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -35,7 +38,25 @@ public class MainActivity extends Activity implements View.OnClickListener {
         scanBtn.setOnClickListener(this);
         adapter = new ListViewAdapter(this, data);
         list.setAdapter(adapter);
-        new LocationFinder(this);
+        final LocationFinder LF =new LocationFinder(this);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                showDialog(
+                        "SSID: " + data.get(position).SSID + "\n"
+                                + "BSSID: " + data.get(position).BSSID + "\n"
+                                + "Capabilities: " + data.get(position).capabilities + "\n"
+                                + "Frequency: " + data.get(position).frequency + "\n"
+                                + "Level: " + data.get(position).level + "\n"
+                        +"Longitude: " +LF.getlongitude()+"\n"
+                        +"Latitude: "+ LF.getlatitude()
+
+                );
+
+            }
+        });
+
     }
 
     public void init() {
@@ -54,23 +75,26 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        if (isScanning) {
-            scanBtn.setText(String.valueOf("Scan Now"));
-            scanBtn.setTextColor(Color.BLACK);
-            isScanning = false;
-        } else {
-            scanBtn.setText(String.valueOf("Stop"));
-            scanBtn.setTextColor(Color.RED);
-            isScanning = true;
-        }
-        // Cần tạo 1 luồng riêng vì ta cần cập nhật giao diện khi quét được Wifi,
-        // nếu không ứng dụng sẽ bị treo
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                autoScan();
+        if(v.getId()==R.id.scan_button) {
+            if (isScanning) {
+                scanBtn.setText(String.valueOf("Scan Now"));
+                scanBtn.setTextColor(Color.BLACK);
+                isScanning = false;
+            } else {
+                scanBtn.setText(String.valueOf("Stop"));
+                scanBtn.setTextColor(Color.RED);
+                isScanning = true;
             }
-        }).start();
+            // Cần tạo 1 luồng riêng vì ta cần cập nhật giao diện khi quét được Wifi,
+            // nếu không ứng dụng sẽ bị treo
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    autoScan();
+                }
+            }).start();
+        }
+
     }
 
     private void autoScan() {
@@ -107,6 +131,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 Toast.makeText(getBaseContext(), message, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    private void showDialog(String s){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Dialog");
+        builder.setMessage(s);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
 }
