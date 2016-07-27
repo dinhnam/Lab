@@ -23,6 +23,9 @@ public class LocationFinder implements LocationListener {
     private Activity activity;
     private LocationManager locationManager;
     private String provider;
+    double longitude;
+    double latitude;
+
 
     public LocationFinder(Activity activity) {
         this.activity = activity;
@@ -66,9 +69,17 @@ public class LocationFinder implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        double longitude = location.getLongitude();
-        double latitude = location.getLatitude();
+        longitude = location.getLongitude();
+        latitude = location.getLatitude();
         Toast.makeText(activity, String.valueOf(longitude + ":" + latitude), Toast.LENGTH_LONG).show();
+    }
+    public double getlongitude(){
+        return longitude;
+
+    }
+    public double getlatitude(){
+        return latitude;
+
     }
 
     @Override
