@@ -1,7 +1,9 @@
 package lab.wifiscanner;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -16,6 +18,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -33,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean isScanning;
     public LocationManager manager;
     public View view;
+    LocationFinder location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +56,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         list.setAdapter(adapter);
         view = findViewById(R.id.main_layout);
         manager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                showDialog(
+                        "SSID: " + data.get(position).SSID + "\n"
+                                + "BSSID: " + data.get(position).BSSID + "\n"
+                                + "Capabilities: " + data.get(position).capabilities + "\n"
+                                + "Frequency: " + data.get(position).frequency + "\n"
+                                + "Level: " + data.get(position).level + "\n"
+                                + "Longitde: "+location.getlongitude()+"\n"
+                                + "Latitude: " +location.getlatitude()
+                );
+
+            }
+        });
+
+
     }
 
     public void checkPermission() {
@@ -68,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
             return;
         }
-        new LocationFinder(view, manager);
+        location=new LocationFinder(view, manager);
     }
 
     @Override
@@ -153,5 +175,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
+    public void showDialog(String s){
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("thông tin");
+        builder.setMessage(s);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
 
-}
+        });
+        builder.show();
+        }
+
+
+    }
