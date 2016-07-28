@@ -18,6 +18,8 @@ import java.util.Locale;
 public class LocationFinder implements LocationListener {
     public View view;
     public LocationManager locationManager;
+    double longitude;
+    double latitude;
 
     public LocationFinder(View view, LocationManager manager) {
         this.view = view;
@@ -51,8 +53,8 @@ public class LocationFinder implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        double longitude = location.getLongitude();
-        double latitude = location.getLatitude();
+        longitude = location.getLongitude();
+        latitude = location.getLatitude();
         String lng = String.format(Locale.getDefault(), "%.3f", longitude);
         String ltd = String.format(Locale.getDefault(), "%.3f", latitude);
         Snackbar.make(view, "Lng: " + lng + " <> Ltd: " + ltd, Snackbar.LENGTH_LONG).show();
@@ -72,4 +74,15 @@ public class LocationFinder implements LocationListener {
     public void onProviderDisabled(String provider) {
 
     }
+    public double getlongitude(){
+        return longitude;
+
+    }
+    public double getlatitude(){
+        return  latitude;
+
+    }
+
+
+
 }
