@@ -1,6 +1,7 @@
 package lab.wifiscanner;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,11 +13,14 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.design.widget.Snackbar;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -36,17 +40,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean isScanning;
     public LocationManager manager;
     public View view;
-    LocationFinder location;
+    public LocationFinder finder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar myToolBar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolBar);
         init();
         checkPermission();
     }
 
-    public void init() {
+    private void init() {
         isScanning = false;
         wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         scanBtn = (Button) findViewById(R.id.scan_button);
@@ -59,26 +65,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                showDialog(
-                        "SSID: " + data.get(position).SSID + "\n"
-                                + "BSSID: " + data.get(position).BSSID + "\n"
-                                + "Capabilities: " + data.get(position).capabilities + "\n"
-                                + "Frequency: " + data.get(position).frequency + "\n"
-                                + "Level: " + data.get(position).level + "\n"
-                                + "Longitde: "+location.getlongitude()+"\n"
-                                + "Latitude: " +location.getlatitude()
+                showDialog("SSID: " + data.get(position).SSID + "\n"
+                        + "BSSID: " + data.get(position).BSSID + "\n"
+                        + "Capabilities: " + data.get(position).capabilities + "\n"
+                        + "Frequency: " + data.get(position).frequency + "\n"
+                        + "Level: " + data.get(position).level + "\n"
+                        + "Longitude: " + finder.getlongitude() + "\n"
+                        + "Latitude: " + finder.getlatitude()
                 );
-
             }
         });
-
-
     }
 
-    public void checkPermission() {
+    private void checkPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 Snackbar.make(view, "You need to allow access to GPS", Snackbar.LENGTH_LONG).setAction("Retry", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -90,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
             return;
         }
-        location=new LocationFinder(view, manager);
+        finder = new LocationFinder(view, manager);
     }
 
     @Override
@@ -117,6 +118,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     @Override
@@ -175,9 +181,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
-    public void showDialog(String s){
+
+    private void showDialog(String s) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("thông tin");
+        builder.setTitle("Thông tin");
         builder.setMessage(s);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
@@ -187,7 +194,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         });
         builder.show();
-        }
-
-
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+}

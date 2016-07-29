@@ -50,7 +50,7 @@ public class ListViewAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         holder.SSID.setText(data.get(position).SSID);
-        holder.level.setText(String.valueOf(data.get(position).level)); // level is a int need to cast to String
+        holder.level.setText(String.valueOf(data.get(position).level));
         return convertView;
     }
 
