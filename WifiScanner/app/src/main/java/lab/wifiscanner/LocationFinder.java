@@ -18,8 +18,8 @@ import java.util.Locale;
 public class LocationFinder implements LocationListener {
     public View view;
     public LocationManager locationManager;
-    double longitude;
-    double latitude;
+    public double longitude;
+    public double latitude;
 
     public LocationFinder(View view, LocationManager manager) {
         this.view = view;
@@ -27,7 +27,7 @@ public class LocationFinder implements LocationListener {
         checkGpsStatus();
     }
 
-    public void checkGpsStatus() {
+    private void checkGpsStatus() {
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             Snackbar.make(view, "GPS is not available", Snackbar.LENGTH_LONG).setAction("OK", new View.OnClickListener() {
                 @Override
@@ -41,7 +41,7 @@ public class LocationFinder implements LocationListener {
         }
     }
 
-    public void getLocation() {
+    private void getLocation() {
         Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (location != null) {
             onLocationChanged(location);
@@ -74,15 +74,16 @@ public class LocationFinder implements LocationListener {
     public void onProviderDisabled(String provider) {
 
     }
-    public double getlongitude(){
+
+    public double getlongitude() {
         return longitude;
 
     }
-    public double getlatitude(){
-        return  latitude;
+
+    public double getlatitude() {
+        return latitude;
 
     }
-
 
 
 }
