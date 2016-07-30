@@ -21,12 +21,14 @@ public class LocationFinder implements LocationListener {
     private LocationManager locationManager;
     private double longitude;
     private double latitude;
-    private static final long TWO_MINUTES = 120;
+    private static final long TWO_MINUTES = 1000 * 60 * 2;
 
     public LocationFinder(View view, LocationManager locationManager) {
         this.view = view;
         this.locationManager = locationManager;
         updateLocation();
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
     }
 
     private void updateLocation() {
@@ -103,8 +105,11 @@ public class LocationFinder implements LocationListener {
         return currentBestLocation;
     }
 
-    private boolean isSameProvider(String newProvider, String currentProvider) {
-        return newProvider.equals(currentProvider);
+    private boolean isSameProvider(String provider1, String provider2) {
+        if (provider1 == null) {
+            return provider2 == null;
+        }
+        return provider1.equals(provider2);
     }
 
     @Override
@@ -113,7 +118,7 @@ public class LocationFinder implements LocationListener {
         latitude = location.getLatitude();
         String lng = String.format(Locale.getDefault(), "%.3f", longitude);
         String ltd = String.format(Locale.getDefault(), "%.3f", latitude);
-        Snackbar.make(view, "Lng: " + lng + " ~ Ltd: " + ltd, Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
+        Snackbar.make(view, "Long: " + lng + " ~ Lat: " + ltd, Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
             }
