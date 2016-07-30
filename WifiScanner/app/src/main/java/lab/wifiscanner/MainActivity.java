@@ -1,7 +1,6 @@
 package lab.wifiscanner;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,7 +19,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -121,8 +119,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (finder != null) {
+            finder.removeUpdate();
+        }
     }
 
     @Override
@@ -185,6 +192,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void showDialog(String s) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Thông tin");
+        builder.setCancelable(false);
         builder.setMessage(s);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
@@ -194,11 +202,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         });
         builder.show();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return true;
     }
 }
